@@ -21,6 +21,9 @@ public class SSTest02 {
     
     public static void main(String[] args) throws IOException {
         
+        //Array bidimensional con los valores a almacenar en la tabla
+        int[][] valores = new int[][] {{7,4,7,5,19,5},{4,7,6,18,1,6},{3,11,6,15,8,9},{9,8,7,22,7,13}};
+        
         DefaultTableModel table = new DefaultTableModel(9,9);       
         final File file = new File("test02.ods");
         try{
@@ -40,7 +43,7 @@ public class SSTest02 {
         // cada vez que inserte un numero en la matriz
         for(int i=5;i<9;i++){
             for(int j=3;j<9;j++){
-                sheet.setValueAt(cont, j, i);
+                sheet.setValueAt(valores[i-5][j-3], j, i);
                 cont++;
             }
         }
