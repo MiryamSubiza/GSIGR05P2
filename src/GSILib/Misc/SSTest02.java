@@ -6,10 +6,12 @@
 
 package GSILib.Misc;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.table.DefaultTableModel;
 import org.jopendocument.dom.OOUtils;
+import org.jopendocument.dom.spreadsheet.MutableCell;
 import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
@@ -39,8 +41,19 @@ public class SSTest02 {
         
         // Rellenamos el array bidimensional con los valores numericos
         // contenidos en el array "valores"
+        MutableCell cellAux;
         for(int i=5;i<9;i++){
             for(int j=3;j<9;j++){
+                // Cojo la celda y si el numero que voy a almacenar es
+                // mayor que 10 pongo color a azul en caso de ser menor
+                // lo pongo a rojo.
+                cellAux = sheet.getCellAt(j,i);
+                if(valores[i-5][j-3] > 10){
+                    cellAux.setBackgroundColor(Color.BLUE);
+                }
+                else{
+                    cellAux.setBackgroundColor(Color.RED);
+                }
                 sheet.setValueAt(valores[i-5][j-3], j, i);
             }
         }
