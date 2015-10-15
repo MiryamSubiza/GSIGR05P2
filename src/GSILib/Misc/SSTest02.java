@@ -37,14 +37,11 @@ public class SSTest02 {
         Sheet sheet;
         sheet = SpreadSheet.createFromFile(file).getSheet(0);
         
-        int cont = 1;
-        // Rellenamos el array bidimensional con valores numericos
-        // para ello uso una variable int contador que ira aumentado
-        // cada vez que inserte un numero en la matriz
+        // Rellenamos el array bidimensional con los valores numericos
+        // contenidos en el array "valores"
         for(int i=5;i<9;i++){
             for(int j=3;j<9;j++){
                 sheet.setValueAt(valores[i-5][j-3], j, i);
-                cont++;
             }
         }
         // Elimino los nombres de las columnas
@@ -56,6 +53,5 @@ public class SSTest02 {
         OOUtils.open(sheet.getSpreadSheet().saveAs(file));
         
     }
-    
     
 }
