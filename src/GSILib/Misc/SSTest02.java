@@ -21,8 +21,8 @@ public class SSTest02 {
     
     public static void main(String[] args) throws IOException {
         
-        DefaultTableModel table = new DefaultTableModel(4,6);       
-        final File file = new File("test01.ods");
+        DefaultTableModel table = new DefaultTableModel(9,9);       
+        final File file = new File("test02.ods");
         try{
             SpreadSheet.createEmpty(table);
             SpreadSheet.createEmpty(table).saveAs(file);
@@ -38,13 +38,18 @@ public class SSTest02 {
         // Rellenamos el array bidimensional con valores numericos
         // para ello uso una variable int contador que ira aumentado
         // cada vez que inserte un numero en la matriz
-        for(int i=0;i<4;i++){
-            for(int j=0;j<6;j++){
+        for(int i=5;i<9;i++){
+            for(int j=3;j<9;j++){
                 sheet.setValueAt(cont, j, i);
                 cont++;
             }
         }
+        // Elimino los nombres de las columnas
+        for(int i=0;i<9;i++){
+            sheet.setValueAt(null, i, 0);
+        }
         
+        // Guardo la nueva tabla en el fichero file y lo abro
         OOUtils.open(sheet.getSpreadSheet().saveAs(file));
         
     }
