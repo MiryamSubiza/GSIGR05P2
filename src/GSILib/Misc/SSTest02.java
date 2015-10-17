@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Gestion de Sistemas de Informacion
+ * Universidad Publica de Navarra
+ * First semester of the Academic Year 2015-2016
  */
 
 package GSILib.Misc;
@@ -16,53 +16,59 @@ import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
 /**
- *
- * @author labora1
+ * Almacenar en un fichero test02.ods una matriz 4x6 de números enteros,
+ * donde el color de fondo de las celdas estará determinado por el valor de
+ * los enteros.
+ * @author subiza.79082
+ * @author izu.78236
+ * @version 15/10/2015
  */
+
 public class SSTest02 {
     
     public static void main(String[] args) throws IOException {
         
-        //Array bidimensional con los valores a almacenar en la tabla
+        //Array bidimensional de 4x6 números enteros a almacenar en la tabla
         int[][] valores = new int[][] {{7,4,7,5,19,5},{4,7,6,18,1,6},{3,11,6,15,8,9},{9,8,7,22,7,13}};
         
         DefaultTableModel table = new DefaultTableModel(9,9);       
         final File file = new File("test02.ods");
-        try{
+        try {
             SpreadSheet.createEmpty(table);
             SpreadSheet.createEmpty(table).saveAs(file);
         }
-        catch (IOException e){
-            System.out.println("An error with the IO system appear");
+        catch (IOException e) {
+            System.out.println("An error with the IO system appeared");
         }
         
         Sheet sheet;
         sheet = SpreadSheet.createFromFile(file).getSheet(0);
         
-        // Rellenamos el array bidimensional con los valores numericos
-        // contenidos en el array "valores"
+        //Almacenar en el fichero test02.ods la matriz "valores"
         MutableCell cellAux;
-        for(int i=5;i<9;i++){
-            for(int j=3;j<9;j++){
-                // Cojo la celda y si el numero que voy a almacenar es
-                // mayor que 10 pongo color a azul en caso de ser menor
-                // lo pongo a rojo.
+        //Primeras 5 filas vacías (Primer elemento en sexta fila)
+        for (int i=5; i<9; i++) {
+            //Primeras 3 columnas vacías (Primer elemento en cuarta columna)
+            for (int j=3; j<9; j++) {
+                /* Si el número a almacenar es mayor o igual que 10, el color 
+                * de fondo de la celda será azul. En caso contrario será rojo.
+                */
                 cellAux = sheet.getCellAt(j,i);
-                if(valores[i-5][j-3] > 10){
+                if (valores[i-5][j-3] >= 10) {
                     cellAux.setBackgroundColor(Color.BLUE);
                 }
-                else{
+                else {
                     cellAux.setBackgroundColor(Color.RED);
                 }
                 sheet.setValueAt(valores[i-5][j-3], j, i);
             }
         }
-        // Elimino los nombres de las columnas
-        for(int i=0;i<9;i++){
+        //Eliminación de los nombres de las columnas (primera fila)
+        for (int i=0; i<9; i++) {
             sheet.setValueAt(null, i, 0);
         }
         
-        // Guardo la nueva tabla en el fichero file y lo abro
+        //Guardar la nueva tabla en el fichero file (test02.ods) y abrirlo
         OOUtils.open(sheet.getSpreadSheet().saveAs(file));
         
     }
