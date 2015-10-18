@@ -36,12 +36,12 @@ public class Ticket {
      * @param atomicInteger Identificador único
      * @param numberOfPeople Cantidad de personas que pueden acceder al evento con esta entrada (una o varias)
      */
-    public Ticket (Event event, AtomicInteger atomicInteger, int numberOfPeople) {
+    public Ticket (Event event, int atomicInteger, int numberOfPeople) {
         
         this.event = event;
         people = new HashMap();
         for (int i = 1; i <= numberOfPeople; i++) {
-            people.put(atomicInteger.getAndIncrement(), false);
+            people.put(atomicInteger+(i-1), false);
         }
         this.numberOfPeople = numberOfPeople;
         this.sold = false;
@@ -147,6 +147,24 @@ public class Ticket {
             j++;
         }
         return idsArray;
+        
+    }
+    
+    /**
+     * Comparación entre dos objetos Ticket
+     * @param o Objeto a comparar
+     * @return True si contienen un mismo identificador. False en caso contrario
+     */
+    @Override
+    public boolean equals (Object o) {
+        
+        if (o instanceof Ticket) {
+            Ticket t = (Ticket)o;
+            int[] ids = this.getIdentifiers();
+            return t.checkIdentifierInTicket(ids[0]);
+        }
+        else return false;
+        
     }
     
     /**
@@ -158,9 +176,10 @@ public class Ticket {
         String availability;
         if (sold) availability = "Sold";
         else availability = "Not sold";
+        
         return "TICKET\nName of the event: " + event.getName() + 
                 "\nNumber of people: " + numberOfPeople + "\nAvailability: "
-                + availability + "\n";
+                + availability + "\nIdentifiers: " + people + "\n";
     }
     
 }
