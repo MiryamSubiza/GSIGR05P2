@@ -37,7 +37,6 @@ public class BussinessSystem implements TicketOffice {
     private HashMap <String, Exhibition> exhibitions;
     private HashMap <String, Festival> festivals;
     private HashMap <String, Location> locations;
-    private AtomicInteger AISales;
     private AtomicInteger AITickets;
     
     public BussinessSystem () {
@@ -51,12 +50,14 @@ public class BussinessSystem implements TicketOffice {
         exhibitions = new HashMap();
         festivals = new HashMap();
         locations = new HashMap();
-        AISales = new AtomicInteger();
         AITickets = new AtomicInteger();
     }
     
-    public AtomicInteger getAtomicInteger () {
-        return atomicInteger;
+    public int getAtomicInteger(int numberOfPeople) {
+        int firstId = atomicInteger.get();
+        for (int i = 1; i <= numberOfPeople; i++)
+            atomicInteger.getAndIncrement();
+        return firstId;
     }
     
     /**
@@ -95,17 +96,15 @@ public class BussinessSystem implements TicketOffice {
     @Override
     public boolean replaceConcert(Concert c){
         
-        if(c != null){ // si el concierto no es null continuo
-            if(concerts.containsKey(c.getName())){ // Si encuentra el concierto a reemplazar procede a mirar si es correcto dicho concierto
-                if(isConcertOKToReplace(c)){ // Dentro del metodo comprueba que las condiciones para reemplazar el concierto son correctas
-                    concerts.replace(c.getName(),c);
-                    return true;
-                }
-                else return false; // El concierto a reemplazar no es correcto
-            }
-            else return false; // El conciert no lo ha encontrado            
-        } // El concierto es nulo
-        else return false;
+        if ((c != null) && //Si el concierto no es null
+                (concerts.containsKey(c.getName())) && //Si encuentra el concierto a reemplazar
+                    (isConcertOKToReplace(c))) { //Si es correcto dicho concierto
+            
+            concerts.replace(c.getName(),c); //Comprueba que las condiciones para reemplazar el concierto son correctas
+            return true;
+            
+        }
+        else return false; //El concierto es nulo, no se ha encontrado o no es correcto
         
     }
     
@@ -119,23 +118,20 @@ public class BussinessSystem implements TicketOffice {
     @Override
     public boolean deleteConcert(Concert c){ // NO ESTOY SEGURO SI ESTA BIEN HECHO
         
-        if(c !=null){ // Si el concierto c no es nulo procedo a su eliminacion
-            if(concerts.containsKey(c.getName())){ // Si el concierto existe en el HashMap lo eliminará
-                ArrayList al = new ArrayList(festivals.values());
-                Iterator i = al.iterator();
-                Festival festivalAux = null;
-                while(i.hasNext()){     
+        if ((c !=null) && //Si el concierto c no es nulo
+                (concerts.containsKey(c.getName()))) { //Y el concierto existe en el HashMap lo eliminará
+                Iterator i = festivals.values().iterator();
+                Festival festivalAux;
+                while (i.hasNext()) {
                     festivalAux = (Festival)i.next();
-                    if(festivalAux.isConcertInFestival(c)){
+                    if (festivalAux.isConcertInFestival(c)) {
                         // Si entro querra decir que hemos encontrado el concierto en un festival
                         festivalAux.removeConcert(c);
-                        festivals.replace(festivalAux.getName(), festivalAux);
+                        //festivals.replace(festivalAux.getName(), festivalAux);
                         break;
                     }
                 }
-                return concerts.remove(c.getName(),c); // Devolvera true si esta y lo borra false en caso contrario
-            }
-            else return false;
+                return concerts.remove(c.getName(),c); //Devolvera true si esta y lo borra, false en caso contrario
         }
         else return false;
     }
@@ -178,14 +174,14 @@ public class BussinessSystem implements TicketOffice {
                     if(f.getEndingDate().before(c.getClosingTimeConcert())){
                         // Si la fecha del ultimo concierto del festival es antes que el concierto añadido
                         // actualizo la hora de fin del festival
-                        f.setClosingDateFestival((FechasHoras)c.getClosingTimeConcert());
-                        f.setClosingTimeFestival((FechasHoras)c.getClosingTimeConcert());                        
+                        f.setClosingDateFestival((FechaCompleta)c.getClosingTimeConcert());
+                        f.setClosingTimeFestival((FechaCompleta)c.getClosingTimeConcert());                        
                     }
                     else if(f.getStartDate().after(c.getStartDate())){
                         // Si la fecha del concierto que abre el festival es posterior a la
                         // fecha del nuevo concierto añadido al festival actualizo las fechas
-                        f.setStartDateFestival((FechasHoras)c.getStartDate());
-                        f.setStartTimeFestival((FechasHoras)c.getStartTimeConcert());  
+                        f.setStartDateFestival((FechaCompleta)c.getStartDate());
+                        f.setStartTimeFestival((FechaCompleta)c.getStartTimeConcert());  
                     }
                     return true;
                 }
@@ -858,9 +854,9 @@ public class BussinessSystem implements TicketOffice {
         Calendar actualDate = Calendar.getInstance();
         actualDate.setTime(new Date());
         if (tickets.containsValue(t) && clients.containsValue(c) && c.isCreditCard(cCard) && !t.isSold()) {
-            c.addSaleToClient(t);
+            //c.addSaleToClient(t);
             t.setSold(true);
-            sales.add(new Sales(t, c, price, cCard, new FechasHoras(actualDate.get(Calendar.DAY_OF_MONTH), 
+            sales.add(new Sales(t, c, price, cCard, new FechaCompleta(actualDate.get(Calendar.DAY_OF_MONTH), 
                 actualDate.get(Calendar.MONTH)+1, actualDate.get(Calendar.YEAR), 
                 actualDate.get(Calendar.HOUR), actualDate.get(Calendar.MINUTE))));
             return true;
@@ -904,9 +900,9 @@ public class BussinessSystem implements TicketOffice {
      */
     public boolean deleteLocation(Location loc) {
         //exhibition y concert
-        if (locations.containsValue(loc)) { //If loc exists
+        if (locations.containsKey(loc.getName())) { //If loc exists
             Iterator i = concerts.values().iterator();
-            Concert concertAux = null;
+            Concert concertAux;
             while (i.hasNext()) {
                 concertAux = (Concert)i.next();
                 //If there is a concert associated with loc
@@ -915,7 +911,7 @@ public class BussinessSystem implements TicketOffice {
                 }
             }
             Iterator j = exhibitions.values().iterator();
-            Exhibition exhibitionAux = null;
+            Exhibition exhibitionAux;
             while (i.hasNext()) {
                 exhibitionAux = (Exhibition)j.next();
                 //If there is an exhibition associated with loc
@@ -923,8 +919,7 @@ public class BussinessSystem implements TicketOffice {
                     return false;
                 }
             }
-            if (locations.remove(loc.getName(), loc)) return true;
-            else return false;
+            return locations.remove(loc.getName(), loc);
         }
         else return false;        
     }
@@ -1104,88 +1099,33 @@ public class BussinessSystem implements TicketOffice {
         }
     }
     
-    /**
-     * Métodos para mostrar por pantalla los datos que tenemos actualmente en el sistema.
-     */
-    public void showArtists () {
-        Iterator i = artists.values().iterator();
-        Artist artistAux = null;
-        while (i.hasNext()) {
-            artistAux = (Artist)i.next();
-            System.out.println(artistAux.toString());
-        }
+    //Métodos para tener acceso a los atributos privados     
+    public HashMap getArtists() {
+        return artists;
     }
-    
-    public void showCollectives () {
-        Iterator i = collectives.values().iterator();
-        Collective collectiveAux = null;
-        while (i.hasNext()) {
-            collectiveAux = (Collective)i.next();
-            System.out.println(collectiveAux.toString());
-        }
+    public HashMap getCollectives() {
+        return collectives;
     }
-    
-    public void showLocations () {
-        Iterator i = locations.values().iterator();
-        Location locationAux = null;
-        while (i.hasNext()) {
-            locationAux = (Location)i.next();
-            System.out.println(locationAux.toString());
-        }
+    public HashMap getLocations() {
+        return locations;
     }
-    
-    public void showConcerts () {
-        Iterator i = concerts.values().iterator();
-        Concert concertAux = null;
-        while (i.hasNext()) {
-            concertAux = (Concert)i.next();
-            System.out.println(concertAux.toString());
-        }
+    public HashMap getConcerts() {
+        return concerts;
     }
-    
-    public void showFestivals () {
-        Iterator i = festivals.values().iterator();
-        Festival festivalAux = null;
-        while (i.hasNext()) {
-            festivalAux = (Festival)i.next();
-            System.out.println(festivalAux.toString());
-        }
+    public HashMap getFestivals() {
+        return festivals;
     }
-    
-    public void showExhibitions () {
-        Iterator i = exhibitions.values().iterator();
-        Exhibition exhibitionAux = null;
-        while (i.hasNext()) {
-            exhibitionAux = (Exhibition)i.next();
-            System.out.println(exhibitionAux.toString());
-        }
+    public HashMap getExhibitions() {
+        return exhibitions;
     }
-    
-    public void showTickets () {
-        Iterator i = tickets.values().iterator();
-        Ticket ticketAux = null;
-        while (i.hasNext()) {
-            ticketAux = (Ticket)i.next();
-            System.out.println(ticketAux.toString());
-        }
+    public HashMap getTickets() {
+        return tickets;
     }
-    
-    public void showClients () {
-        Iterator i = clients.values().iterator();
-        Client clientAux = null;
-        while (i.hasNext()) {
-            clientAux = (Client)i.next();
-            System.out.println(clientAux.toString());
-        }
+    public HashMap getClients() {
+        return clients;
     }
-    
-    public void showSales () {
-        Iterator i = sales.iterator();
-        Sales saleAux = null;
-        while (i.hasNext()) {
-            saleAux = (Sales)i.next();
-            System.out.println(saleAux.toString());
-        }
+    public HashSet getSales() {
+        return sales;
     }
     
 }
