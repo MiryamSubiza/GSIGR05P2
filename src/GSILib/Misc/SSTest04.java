@@ -6,10 +6,7 @@
 
 package GSILib.Misc;
 
-import GSILabs.BModel.Artist;
-import GSILabs.BModel.Concert;
-import GSILabs.BModel.FechasHoras;
-import GSILabs.BModel.Location;
+import GSILabs.BModel.*;
 import GSILabs.BSystem.BussinessSystem;
 import java.io.File;
 import java.io.IOException;
@@ -27,58 +24,79 @@ import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
 public class SSTest04 {
     
-    private static BussinessSystem bSystem;
-    
-    private static Artist a1;
-    private static Artist a2;
-    
-    private static Location l1;
-    private static Location l2;
-    private static Location l3;
+    private static BussinessSystem bSystem;    
+    private static Artist[] artists = new Artist[3];    
+    private static Location[] locations = new Location[3];
+    private static Concert[] concerts = new Concert[3];
     
     public static void main(String[] args) throws IOException {
         
         bSystem = new BussinessSystem();
         
-        a1 = new Artist("Bob Dylan", "Músico estadounidense", "www.bobdylan.com/es");
-        a2 = new Artist("Alex Turner", "Cantante del grupo Arctic Monkeys");
+        // Creo las instancias de los artistas
+        artists[0] = new Artist("Bob Dylan", "Músico estadounidense", "www.bobdylan.com/es");
+        artists[1] = new Artist("Alex Turner", "Cantante del grupo Arctic Monkeys");
+        artists[2] = new Artist("Michael Jackson", "Rey del pop", "www.MJ.com");
         
-        l1 = new Location("Palau Sant Jordi", 24000, "Barcelona", "www.palausantjordi.cat/es");
-        l2 = new Location("Madrid Arena", 12000, "Madrid");
-        l3 = new Location("Estadio de Mestalla", 55000, "Valencia");
-        /*
-        con1 = new Concert("Concierto uno", col1, new FechasHoras("01/02/2016", "22:00"),
-            new FechasHoras("01/02/2016", "22:00"), new FechasHoras("01/02/2016", "21:00"),
-            new FechasHoras("01/02/2016", "23:45"), l6);
-        */
-        DefaultTableModel table = new DefaultTableModel(4,6);       
-        final File file = new File("test03.ods");
+        // Creo las instacias de las localizaciones
+        locations[0] = new Location("Palau Sant Jordi", 24000, "Barcelona", "www.palausantjordi.cat/es");
+        locations[1] = new Location("Madrid Arena", 12000, "Madrid");
+        locations[2] = new Location("Estadio de Mestalla", 55000, "Valencia");
+        
+        // Creo las instacias de los conciertos
+        concerts[0] = new Concert("Concierto uno", artists[0], new FechaCompleta("01/02/2016", "22:00"),
+            new FechaCompleta("01/02/2016", "22:00"), new FechaCompleta("01/02/2016", "21:00"),
+            new FechaCompleta("01/02/2016", "23:45"), locations[0]);
+        concerts[1] = new Concert("Concierto dos", artists[1], new FechaCompleta("14/11/2015", "20:30"),
+            new FechaCompleta("14/11/2015", "20:30"), new FechaCompleta("14/11/2015", "20:00"),
+            new FechaCompleta("14/11/2015", "23:30"), locations[1]);
+        concerts[2] = new Concert("Concierto tres", artists[2], new FechaCompleta("02/02/2016", "21:00"),
+            new FechaCompleta("02/02/2016", "21:00"), new FechaCompleta("02/02/2016", "20:30"),
+            new FechaCompleta("02/02/2016", "23:00"), locations[2]);
+        
+        // Creo la tabla donde voy a almacenar las instacias de los conciertos
+        DefaultTableModel table = new DefaultTableModel(3,7);
+        final File file = new File("test03.ods");     
+        SpreadSheet spreadSheet = null;
+        
         try{
-            SpreadSheet.createEmpty(table);
-            SpreadSheet.createEmpty(table).saveAs(file);
+            //SpreadSheet.createEmpty(table);
+            //SpreadSheet.createEmpty(table).saveAs(file);
+            spreadSheet = SpreadSheet.createEmpty(table);
+            spreadSheet.saveAs(file);
         }
         catch (IOException e){
             System.out.println("An error with the IO system appeared");
         }
         
-        Sheet sheet;
-        sheet = SpreadSheet.createFromFile(file).getSheet(0);
-        sheet.getSpreadSheet().addSheet(1, "Concert");
+        // Creo las hojas de Concierto, Festival y Exhibicion de mi hoja de calculo
+        //spreadSheet.addSheet(0,"Concert");
+        spreadSheet.addSheet(1,"Festival");
+        spreadSheet.addSheet(2,"Exhibition");
         
-        int cont = 1;
-        /* Almacenar en el fichero test01.ods una matriz de números enteros
-        * utilizando una variable contador que aumentará cada vez que se
-        * inserte un número en la matriz.
+        // Relleno las hojas de mi hoja de calculo
+        
+        //Sheet sheet[] = new Sheet[3];
+        //sheet[0] = SpreadSheet.createFromFile(file).getSheet(0);
+        //sheet.getSpreadSheet().addSheet(1, "Concert");
+        
+        /* Almacenar en el fichero test03.ods una matriz strings con la informacion
+        * sacada de los conciertos de los cuales hemos hecho una instancia
         */
-        for (int i=0; i<4; i++) {
-            for (int j=0; j<6; j++) {
-                sheet.setValueAt(cont, j, i);
-                cont++;
-            }
+        for (int i=0; i<3; i++) {
+            
+            spreadSheet.getSheet(0).setValueAt(concerts[i].getName(), 0, i);
+            spreadSheet.getSheet(0).setValueAt(concerts[i].getPerformer().getName(), 1, i);
+            spreadSheet.getSheet(0).setValueAt(concerts[i].getStartDate().toString(), 2, i);
+            spreadSheet.getSheet(0).setValueAt(concerts[i].getStartTimeConcert().toString(), 3, i);
+            spreadSheet.getSheet(0).setValueAt(concerts[i].getDoorOpeningTimeConcert().toString(), 4, i);
+            spreadSheet.getSheet(0).setValueAt(concerts[i].getClosingTimeConcert().toString(), 5, i);
+            spreadSheet.getSheet(0).setValueAt(concerts[i].getLocation().getName(), 6, i);
+            
         }
         
-        //Guardar la nueva tabla en el fichero file (test01.ods) y abrirlo
-        OOUtils.open(sheet.getSpreadSheet().saveAs(file));
+        //Guardar la nueva tabla en el fichero file (test03.ods) y abrirlo
+        OOUtils.open(spreadSheet.saveAs(file));
 
     }
     
