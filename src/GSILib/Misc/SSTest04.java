@@ -71,6 +71,7 @@ public class SSTest04 {
         
         // Creo las hojas de Concierto, Festival y Exhibicion de mi hoja de calculo
         //spreadSheet.addSheet(0,"Concert");
+        spreadSheet.getFirstSheet().setName("Concert");
         spreadSheet.addSheet(1,"Festival");
         spreadSheet.addSheet(2,"Exhibition");
         
