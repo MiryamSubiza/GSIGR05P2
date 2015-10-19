@@ -28,6 +28,7 @@ public class SSTest04 {
     private static Artist[] artists = new Artist[3];    
     private static Location[] locations = new Location[3];
     private static Concert[] concerts = new Concert[3];
+    private static Festival festival;
     
     public static void main(String[] args) throws IOException {
         
@@ -54,6 +55,11 @@ public class SSTest04 {
             new FechaCompleta("02/02/2016", "21:00"), new FechaCompleta("02/02/2016", "20:30"),
             new FechaCompleta("02/02/2016", "23:00"), locations[2]);
         
+        // Creo la instancia de los festivales
+        festival = new Festival("MJ Experiencie", concerts[0], new FechaCompleta("25/01/1994","22:00"),
+            new FechaCompleta("25/01/1994","23:45"), new FechaCompleta("25/01/1994","21:00"),
+            new FechaCompleta("25/01/1994","23:45"));
+        
         // Creo la tabla donde voy a almacenar las instacias de los conciertos
         DefaultTableModel table = new DefaultTableModel(3,7);
         final File file = new File("test03.ods");     
@@ -75,8 +81,8 @@ public class SSTest04 {
         
         // Configuro la hoja de festivales para que pueda almacenarlos
         spreadSheet.addSheet(1,"Festival");
-        spreadSheet.getSheet(1).setRowCount(3);
-        spreadSheet.getSheet(1).setColumnCount(7);
+        spreadSheet.getSheet(1).setRowCount(1);
+        spreadSheet.getSheet(1).setColumnCount(6);
         
         // Configuro la hoja de exhibiciones para que pueda almacenarlos
         spreadSheet.addSheet(2,"Exhibition");
@@ -101,6 +107,15 @@ public class SSTest04 {
             spreadSheet.getSheet(0).setValueAt(concerts[i].getLocation().getName(), 6, i);
             
         }
+        
+        // Almaceno la informacion de festivales en su hoja correspondiente
+        spreadSheet.getSheet(0).setValueAt(concerts[i].getName(), 0, i);
+        spreadSheet.getSheet(0).setValueAt(concerts[i].getPerformer().getName(), 1, i);
+        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartDate()).fechaToString(), 2, i);
+        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartTimeConcert()).horaToString(), 3, i);
+        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getDoorOpeningTimeConcert()).horaToString(), 4, i);
+        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getClosingTimeConcert()).horaToString(), 5, i);
+        spreadSheet.getSheet(0).setValueAt(concerts[i].getLocation().getName(), 6, i);
         
         //Guardar la nueva tabla en el fichero file (test03.ods) y abrirlo
         OOUtils.open(spreadSheet.saveAs(file));
