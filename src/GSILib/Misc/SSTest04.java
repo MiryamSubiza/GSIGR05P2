@@ -87,10 +87,10 @@ public class SSTest04 {
             
             spreadSheet.getSheet(0).setValueAt(concerts[i].getName(), 0, i);
             spreadSheet.getSheet(0).setValueAt(concerts[i].getPerformer().getName(), 1, i);
-            spreadSheet.getSheet(0).setValueAt(concerts[i].getStartDate().toString(), 2, i);
-            spreadSheet.getSheet(0).setValueAt(concerts[i].getStartTimeConcert().toString(), 3, i);
-            spreadSheet.getSheet(0).setValueAt(concerts[i].getDoorOpeningTimeConcert().toString(), 4, i);
-            spreadSheet.getSheet(0).setValueAt(concerts[i].getClosingTimeConcert().toString(), 5, i);
+            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartDate()).fechaToString(), 2, i);
+            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartTimeConcert()).horaToString(), 3, i);
+            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getDoorOpeningTimeConcert()).horaToString(), 4, i);
+            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getClosingTimeConcert()).horaToString(), 5, i);
             spreadSheet.getSheet(0).setValueAt(concerts[i].getLocation().getName(), 6, i);
             
         }
