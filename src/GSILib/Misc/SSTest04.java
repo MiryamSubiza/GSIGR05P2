@@ -105,6 +105,11 @@ public class SSTest04 {
         
         bSystem.addNewFestival(festival);
         
+        // Creo la instancia de los festivales
+        festival = new Festival("MJ Experiencie", concerts[0], new FechaCompleta("25/01/1994","22:00"),
+            new FechaCompleta("25/01/1994","23:45"), new FechaCompleta("25/01/1994","21:00"),
+            new FechaCompleta("25/01/1994","23:45"));
+        
         // Creo la tabla donde voy a almacenar las instacias de los conciertos
         DefaultTableModel table = new DefaultTableModel(3,7);
         final File file = new File("test03.ods");     
@@ -148,7 +153,7 @@ public class SSTest04 {
             spreadSheet.getSheet(0).setValueAt(concerts[i].getLocation().getName(), 6, i);
             
         }
-        
+
         // Almacenamiento de datos en la hoja Exhibition
         for (int i=0; i<exhibitions.length; i++) {
             
