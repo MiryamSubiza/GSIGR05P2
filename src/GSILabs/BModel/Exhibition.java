@@ -203,6 +203,14 @@ public class Exhibition implements LastingEvent {
     }
     
     /**
+     * Obtener enlaces web
+     * @return HashSet con todos los enlaces web asociados a esta exposición
+     */
+    public HashSet getWebLinks () {
+        return webLinks;
+    }
+    
+    /**
      * Establecer localización
      * @param location Location
      */
