@@ -109,13 +109,12 @@ public class SSTest04 {
         }
         
         // Almaceno la informacion de festivales en su hoja correspondiente
-        spreadSheet.getSheet(0).setValueAt(concerts[i].getName(), 0, i);
-        spreadSheet.getSheet(0).setValueAt(concerts[i].getPerformer().getName(), 1, i);
-        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartDate()).fechaToString(), 2, i);
-        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartTimeConcert()).horaToString(), 3, i);
-        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getDoorOpeningTimeConcert()).horaToString(), 4, i);
-        spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getClosingTimeConcert()).horaToString(), 5, i);
-        spreadSheet.getSheet(0).setValueAt(concerts[i].getLocation().getName(), 6, i);
+        spreadSheet.getSheet(1).setValueAt(festival.getName(), 0, 0);
+        spreadSheet.getSheet(1).setValueAt(festival.getConcerts().iterator().next(), 1, 0);
+        spreadSheet.getSheet(1).setValueAt(((FechaCompleta)festival.getStartDate()).fechaToString(), 2, 0);
+        spreadSheet.getSheet(1).setValueAt(((FechaCompleta)festival.getEndingDate()).fechaToString(), 3, 0);
+        spreadSheet.getSheet(1).setValueAt(((FechaCompleta)festival.getStartTimeFestival()).horaToString(), 4, 0);
+        spreadSheet.getSheet(1).setValueAt(((FechaCompleta)festival.getClosingTimeFestival()).horaToString(), 5, 0);    
         
         //Guardar la nueva tabla en el fichero file (test03.ods) y abrirlo
         OOUtils.open(spreadSheet.saveAs(file));
