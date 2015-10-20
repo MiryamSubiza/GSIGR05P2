@@ -10,9 +10,9 @@ import GSILabs.BModel.*;
 import GSILabs.BSystem.BussinessSystem;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import javax.swing.table.DefaultTableModel;
 import org.jopendocument.dom.OOUtils;
-import org.jopendocument.dom.spreadsheet.Sheet;
 import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
 /**
@@ -27,7 +27,7 @@ public class SSTest04 {
     private static BussinessSystem bSystem;    
     private static Artist[] artists = new Artist[3];    
     private static Location[] locations = new Location[7];
-    private static Concert[] concerts = new Concert[3];
+    private static Concert[] concerts = new Concert[5];
     private static Exhibition[] exhibitions = new Exhibition[4];
     private static Festival festival;
     
@@ -61,12 +61,18 @@ public class SSTest04 {
         concerts[0] = new Concert("Bdylan Tour 15 BCN", artists[0], new FechaCompleta("01/02/2016", "22:00"),
             new FechaCompleta("01/02/2016", "22:00"), new FechaCompleta("01/02/2016", "21:00"),
             new FechaCompleta("01/02/2016", "23:45"), locations[0]);
-        concerts[1] = new Concert("Bdylan Tour 15 MAD", artists[1], new FechaCompleta("14/11/2015", "20:30"),
+        concerts[1] = new Concert("Bdylan Tour 15 MAD", artists[0], new FechaCompleta("14/11/2015", "20:30"),
             new FechaCompleta("14/11/2015", "20:30"), new FechaCompleta("14/11/2015", "20:00"),
             new FechaCompleta("14/11/2015", "23:30"), locations[1]);
-        concerts[2] = new Concert("Bdylan Tour 15 VAL", artists[2], new FechaCompleta("02/02/2016", "21:00"),
+        concerts[2] = new Concert("Bdylan Tour 15 VAL", artists[0], new FechaCompleta("02/02/2016", "21:00"),
             new FechaCompleta("02/02/2016", "21:00"), new FechaCompleta("02/02/2016", "20:30"),
             new FechaCompleta("02/02/2016", "23:00"), locations[2]);
+        concerts[3] = new Concert("MJ Tour 16 BCN", artists[2], new FechaCompleta("02/06/2016", "21:00"),
+            new FechaCompleta("02/06/2016", "21:00"), new FechaCompleta("02/06/2016", "20:30"),
+            new FechaCompleta("02/06/2016", "23:00"), locations[0]);
+        concerts[4] = new Concert("MJ Tour 16 MAD", artists[2], new FechaCompleta("07/07/2016", "21:00"),
+            new FechaCompleta("07/07/2016", "21:00"), new FechaCompleta("07/07/2016", "20:30"),
+            new FechaCompleta("07/07/2016", "23:00"), locations[1]);
         
         for (int i = 0; i < concerts.length; i++) {
             bSystem.addNewConcert(concerts[i]);
@@ -99,10 +105,11 @@ public class SSTest04 {
         }
         
         // Creo la instancia de los festivales
-        festival = new Festival("MJ Experiencie", concerts[0], new FechaCompleta("25/01/1994","22:00"),
-            new FechaCompleta("25/01/1994","23:45"), new FechaCompleta("25/01/1994","21:00"),
-            new FechaCompleta("25/01/1994","23:45"));
+        festival = new Festival("MJ Experiencie", concerts[3], new FechaCompleta("02/06/2016","20:30"),
+            new FechaCompleta("07/07/2016","23:00"), new FechaCompleta("02/06/2016","20:30"),
+            new FechaCompleta("07/07/2016","23:00"));
         
+        festival.addConcert(concerts[4]);
         bSystem.addNewFestival(festival);
                        
         // Creo la tabla donde voy a almacenar las instacias de los conciertos
@@ -111,8 +118,6 @@ public class SSTest04 {
         SpreadSheet spreadSheet = null;
         
         try{
-            //SpreadSheet.createEmpty(table);
-            //SpreadSheet.createEmpty(table).saveAs(file);
             spreadSheet = SpreadSheet.createEmpty(table);
             spreadSheet.saveAs(file);
         }
@@ -120,59 +125,88 @@ public class SSTest04 {
             System.out.println("An error with the IO system appeared");
         }
         
-        // Creo las hojas de Concierto, Festival y Exhibicion de mi hoja de cálculo
+        // Creo las hojas de Concierto, Festival y Exposición de mi hoja de cálculo
         spreadSheet.getFirstSheet().setName("Concert");
         
         // Configuro la hoja de festivales para que pueda almacenarlos
         spreadSheet.addSheet(1,"Exhibition");
-        spreadSheet.getSheet(1).setRowCount(3);
-        spreadSheet.getSheet(1).setColumnCount(7);
+        spreadSheet.getSheet(1).setRowCount(4);
+        spreadSheet.getSheet(1).setColumnCount(10);
         
         // Configuro la hoja de exposiciones para que pueda almacenarlos
         spreadSheet.addSheet(2,"Festival");
-        spreadSheet.getSheet(2).setRowCount(3);
-        spreadSheet.getSheet(2).setColumnCount(7);
+        spreadSheet.getSheet(2).setRowCount(4);
+        spreadSheet.getSheet(2).setColumnCount(10);
         
         // Relleno las hojas de mi hoja de cálculo        
-        /* Almacenar en el fichero test03.ods una matriz strings con la informacion
+        /* Almacenar en el fichero test03.ods una matriz strings con la información
         * sacada de los conciertos de los cuales hemos hecho una instancia
         */
-        for (int i=0; i<concerts.length; i++) {
-            
-            spreadSheet.getSheet(0).setValueAt(concerts[i].getName(), 0, i);
-            spreadSheet.getSheet(0).setValueAt(concerts[i].getPerformer().getName(), 1, i);
-            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartDate()).fechaToString(), 2, i);
-            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getStartTimeConcert()).horaToString(), 3, i);
-            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getDoorOpeningTimeConcert()).horaToString(), 4, i);
-            spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concerts[i].getClosingTimeConcert()).horaToString(), 5, i);
-            spreadSheet.getSheet(0).setValueAt(concerts[i].getLocation().getName(), 6, i);
-            
-        }
-
-        // Almacenamiento de datos en la hoja Exhibition
-        for (int i=0; i<exhibitions.length; i++) {
-            
-            spreadSheet.getSheet(1).setValueAt(exhibitions[i].getTitle(), 0, i);
-            spreadSheet.getSheet(1).setValueAt(exhibitions[i].getPerformer().getName(), 1, i);
-            spreadSheet.getSheet(1).setValueAt(exhibitions[i].getLocation().getName(), 2, i);
-            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitions[i].getStartDate()).fechaToString(), 3, i);
-            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitions[i].getStartTimeExhibition()).horaToString(), 4, i);
-            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitions[i].getEndingDate()).fechaToString(), 5, i);
-            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitions[i].getClosingTimeExhibition()).horaToString(), 6, i);
-            String[] webLinks;
-            webLinks = (String[])(exhibitions[i].getWebLinks().toArray());
-            for (int j=0; j<webLinks.length; j++) {
-                spreadSheet.getSheet(1).setValueAt(webLinks[j], 7+j, i);
+        Iterator i = bSystem.getConcerts().values().iterator();
+        Concert concertAux;
+        int j = 0;
+        while (i.hasNext()) {
+            concertAux = (Concert)i.next();
+            if (concertAux.getPerformer().getName().equals(artists[0].getName())) {
+                spreadSheet.getSheet(0).setValueAt(concertAux.getName(), 0, j);
+                spreadSheet.getSheet(0).setValueAt(concertAux.getPerformer().getName(), 1, j);
+                spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concertAux.getStartDate()).fechaToString(), 2, j);
+                spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concertAux.getStartTimeConcert()).horaToString(), 3, j);
+                spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concertAux.getDoorOpeningTimeConcert()).horaToString(), 4, j);
+                spreadSheet.getSheet(0).setValueAt(((FechaCompleta)concertAux.getClosingTimeConcert()).horaToString(), 5, j);
+                spreadSheet.getSheet(0).setValueAt(concertAux.getLocation().getName(), 6, j);
+                j++;
             }
         }
         
-        // Almaceno la informacion de festivales en su hoja correspondiente
-        spreadSheet.getSheet(2).setValueAt(festival.getName(), 0, 0);
-        spreadSheet.getSheet(2).setValueAt(festival.getConcerts().iterator().next(), 1, 0);
-        spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getStartDate()).fechaToString(), 2, 0);
-        spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getEndingDate()).fechaToString(), 3, 0);
-        spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getStartTimeFestival()).horaToString(), 4, 0);
-        spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getClosingTimeFestival()).horaToString(), 5, 0); 
+        // Almacenamiento de datos en la hoja Exhibition
+        i = bSystem.getExhibitions().values().iterator();
+        Exhibition exhibitionAux;
+        j = 0;
+        while (i.hasNext()) {
+            exhibitionAux = (Exhibition)i.next();
+            spreadSheet.getSheet(1).setValueAt(exhibitionAux.getTitle(), 0, j);
+            spreadSheet.getSheet(1).setValueAt(exhibitionAux.getPerformer().getName(), 1, j);
+            spreadSheet.getSheet(1).setValueAt(exhibitionAux.getLocation().getName(), 2, j);
+            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitionAux.getStartDate()).fechaToString(), 3, j);
+            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitionAux.getStartTimeExhibition()).horaToString(), 4, j);
+            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitionAux.getEndingDate()).fechaToString(), 5, j);
+            spreadSheet.getSheet(1).setValueAt(((FechaCompleta)exhibitionAux.getClosingTimeExhibition()).horaToString(), 6, j);
+            String[] webLinks;
+            webLinks = (String[])(exhibitionAux.getWebLinks().toArray(new String[exhibitionAux.getWebLinks().size()]));
+            for (int k=0; k<webLinks.length; k++) {
+                spreadSheet.getSheet(1).setValueAt(webLinks[k], 7+k, j);
+            }
+            j++;
+        }
+        
+        // Almaceno la información de festivales en su hoja correspondiente
+        i = bSystem.getFestivals().values().iterator();
+        Festival festivalAux;
+        j = 0;
+        int k = 1;
+        while (i.hasNext()) {
+            festivalAux = (Festival)i.next();
+            spreadSheet.getSheet(2).setValueAt(festival.getName(), 0, j);
+            Iterator c = festival.getConcerts().iterator();
+            Concert cAux;
+            while (c.hasNext()) {
+                cAux = (Concert)c.next();
+                spreadSheet.getSheet(2).setValueAt(cAux.getName(), 1, k);
+                spreadSheet.getSheet(2).setValueAt(cAux.getPerformer().getName(), 2, k);
+                spreadSheet.getSheet(2).setValueAt(((FechaCompleta)cAux.getStartDate()).fechaToString(), 3, k);
+                spreadSheet.getSheet(2).setValueAt(((FechaCompleta)cAux.getStartTimeConcert()).horaToString(), 4, k);
+                spreadSheet.getSheet(2).setValueAt(((FechaCompleta)cAux.getDoorOpeningTimeConcert()).horaToString(), 5, k);
+                spreadSheet.getSheet(2).setValueAt(((FechaCompleta)cAux.getClosingTimeConcert()).horaToString(), 6, k);
+                spreadSheet.getSheet(2).setValueAt(cAux.getLocation().getName(), 7, k);
+                k++;
+            }
+            spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getStartDate()).fechaToString(), 1, j);
+            spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getStartTimeFestival()).horaToString(), 2, j);
+            spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getEndingDate()).fechaToString(), 3, j);
+            spreadSheet.getSheet(2).setValueAt(((FechaCompleta)festival.getClosingTimeFestival()).horaToString(), 4, j);
+            k++;
+        } 
         
         //Guardar la nueva tabla en el fichero file (test03.ods) y abrirlo
         OOUtils.open(spreadSheet.saveAs(file));
