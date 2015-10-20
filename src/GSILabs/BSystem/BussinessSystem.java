@@ -9,6 +9,7 @@
 package GSILabs.BSystem;
 
 import GSILabs.BModel.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -1126,6 +1127,14 @@ public class BussinessSystem implements TicketOffice {
     }
     public HashSet getSales() {
         return sales;
+    }
+    
+    public int importTickets(File f){
+        
+        int numTicketsOk = 0;
+        //Hay que leer el fichero f y fila a fila ir añadiendo los tickets al sistema
+        return numTicketsOk;
+        
     }
     
 }
