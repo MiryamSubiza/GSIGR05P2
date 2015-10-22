@@ -10,6 +10,7 @@ package GSILabs.BSystem;
 
 import GSILabs.BModel.*;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -17,6 +18,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.jopendocument.dom.spreadsheet.Sheet;
+import org.jopendocument.dom.spreadsheet.SpreadSheet;
 
 /**
  * Implementación del interfaz TicketOffice, representando el comportamiento 
@@ -1129,10 +1132,65 @@ public class BussinessSystem implements TicketOffice {
         return sales;
     }
     
-    public int importTickets(File f){
+    /**
+     * Lee de un fichero una serie de tickets y los introduce al sistema
+     * @param f   Fichero del cual voy a leer los tickets
+     * @return El numero de tickets que he introducido correctamente
+     */
+    public int importTickets(File f) throws IOException{
         
         int numTicketsOk = 0;
         //Hay que leer el fichero f y fila a fila ir añadiendo los tickets al sistema
+        final File file = new File("P02Ej05.ods");
+                
+        Sheet sheet;
+        sheet = SpreadSheet.createFromFile(file).getSheet(0);
+                       
+        Ticket ticketAux = null;
+        // Voy a recorrer todas las filas de la hoja de calculo, para ir añadiendo
+        // los tickets uno a uno
+        for (int i = 0; i < sheet.getRowCount(); i++) {
+            
+            for (int j = 0; j < sheet.getColumnCount(); j++) {
+                
+                // Si entra en el if quiere decir que estamos en la primera posicion
+                // de la fila y contiene el nombre del evento al que esta asociado el ticket
+                if((!sheet.getCellAt(j,i).isEmpty()) && (j == 0)){
+                    
+                    String nameEvent = (String)sheet.getCellAt(j,i).getValue();
+                    ticketAux = new Ticket(getEvent(nameEvent));
+                    
+                }
+                // Ahora ya se seguro que la celda contiene algo que va a ser o id o si
+                // esta usado o no la entrada
+                else{
+                    // Si se encuentra en columna par quiere decir que contiene un ID
+                    // si ademas la siguiente columna no esta vacia, quiere decir que
+                    // almacena si la entrada es usada o no, dicho caso procedemos a
+                    // añadirla
+                    if((j%2 == 0)&&(!sheet.getCellAt(j+1,i).isEmpty())){
+                        if(sheet.getCellAt(j+1,i).getValue().equals("Not used")){
+                            // La entrada no esta usada
+                            ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), false);                            
+                        }
+                        else if(sheet.getCellAt(j+1,i).getValue().equals("Used")){
+                            // La entrada esta usada
+                            ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), true);
+                        }
+                    }
+                }
+            }
+            
+            // Ahora que ya he rellenado el ticketAux con todos los identificadores
+            // lo introduzco en el BussinessSystem
+            if(addNewTicket(ticketAux)){
+                numTicketsOk++;
+                // Lo vuelvo a poner a null para añadir otro ticket
+                // en la siguiente iteración
+                ticketAux = null;
+            }
+           
+        }
         return numTicketsOk;
         
     }
