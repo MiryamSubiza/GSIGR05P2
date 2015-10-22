@@ -19,7 +19,7 @@ public class SSTest05 {
     
     public static void main(String[] args) throws IOException{
         
-        final File file = new File("P02Ej05.ods");
+        final File file = new File("P05Ej02.ods");
         bSystem = new BussinessSystem();
         int ticketsOk = bSystem.importTickets(file);
         System.out.println("El numero de tickets introducidos: "+ ticketsOk);
