@@ -49,6 +49,18 @@ public class Ticket {
     }
     
     /**
+     * Método constructor, inicialización de variables
+     * @param event Evento al que se accede, puede ser Concierto, Festival o Exposición
+     */
+    public Ticket (Event event){
+        
+        this.event = event;
+        people = new HashMap();
+        this.numberOfPeople = 0;
+        this.sold = false;
+    }
+    
+    /**
      * Establecer evento
      * @param event Evento al que se accede
      */
@@ -147,6 +159,19 @@ public class Ticket {
             j++;
         }
         return idsArray;
+        
+    }
+    
+    /**
+     * Añade una entrada a este Ticket que contiene una o varias entradas
+     * @param idTicket Identificador de la entrada a introducir
+     * @param usedOrNot True si esta usado o falso si no esta usado
+     * @return True si la entrada ha sido añadido dentro del objeto Ticket
+     */
+    public boolean addTicketToTicket(int idTicket, boolean usedOrNot){
+        
+        // Añado a mi HashMap de identificadores de este ticket la nueva entrada
+        return people.put(idTicket, usedOrNot);
         
     }
     
