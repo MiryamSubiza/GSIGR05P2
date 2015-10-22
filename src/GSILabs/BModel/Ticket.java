@@ -171,7 +171,8 @@ public class Ticket {
     public boolean addTicketToTicket(int idTicket, boolean usedOrNot){
         
         // Añado a mi HashMap de identificadores de este ticket la nueva entrada
-        return people.put(idTicket, usedOrNot);
+        this.numberOfPeople++;
+        return people.put(idTicket, usedOrNot);        
         
     }
     
@@ -204,7 +205,7 @@ public class Ticket {
         
         return "TICKET\nName of the event: " + event.getName() + 
                 "\nNumber of people: " + numberOfPeople + "\nAvailability: "
-                + availability + "\nIdentifiers: " + people + "\n";
+                + availability + "\nIdentifiers: " + people.toString() + "\n";
     }
     
 }
