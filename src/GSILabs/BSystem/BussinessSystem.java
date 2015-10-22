@@ -1141,14 +1141,16 @@ public class BussinessSystem implements TicketOffice {
         
         int numTicketsOk = 0;
         //Hay que leer el fichero f y fila a fila ir añadiendo los tickets al sistema
-        final File file = new File("P02Ej05.ods");
                 
         Sheet sheet;
-        sheet = SpreadSheet.createFromFile(file).getSheet(0);
+        sheet = SpreadSheet.createFromFile(f).getSheet(0);
                        
         Ticket ticketAux = null;
+        final String USED = "Used";
+        final String NOTUSED = "Not used";
         // Voy a recorrer todas las filas de la hoja de calculo, para ir añadiendo
-        // los tickets uno a uno
+        // los tickets uno a uno        
+        
         for (int i = 0; i < sheet.getRowCount(); i++) {
             
             for (int j = 0; j < sheet.getColumnCount(); j++) {
@@ -1157,6 +1159,7 @@ public class BussinessSystem implements TicketOffice {
                 // de la fila y contiene el nombre del evento al que esta asociado el ticket
                 if((!sheet.getCellAt(j,i).isEmpty()) && (j == 0)){
                     
+                    System.out.println("Inicializo ticket");
                     String nameEvent = (String)sheet.getCellAt(j,i).getValue();
                     ticketAux = new Ticket(getEvent(nameEvent));
                     
@@ -1168,12 +1171,14 @@ public class BussinessSystem implements TicketOffice {
                     // si ademas la siguiente columna no esta vacia, quiere decir que
                     // almacena si la entrada es usada o no, dicho caso procedemos a
                     // añadirla
-                    if((j%2 == 0)&&(!sheet.getCellAt(j+1,i).isEmpty())){
-                        if(sheet.getCellAt(j+1,i).getValue().equals("Not used")){
+                    System.out.println("Entro en añadir ids y booleans");
+                    if((j%2 != 0)&&(!sheet.getCellAt(j+1,i).isEmpty())){
+                        if(sheet.getCellAt(j+1,i).getValue().equals(NOTUSED)){
                             // La entrada no esta usada
+                            System.out.println("Entro");
                             ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), false);                            
                         }
-                        else if(sheet.getCellAt(j+1,i).getValue().equals("Used")){
+                        else if(sheet.getCellAt(j+1,i).getValue().equals(USED)){
                             // La entrada esta usada
                             ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), true);
                         }
@@ -1184,10 +1189,11 @@ public class BussinessSystem implements TicketOffice {
             // Ahora que ya he rellenado el ticketAux con todos los identificadores
             // lo introduzco en el BussinessSystem
             if(addNewTicket(ticketAux)){
+                System.out.println(ticketAux.toString());
                 numTicketsOk++;
                 // Lo vuelvo a poner a null para añadir otro ticket
                 // en la siguiente iteración
-                ticketAux = null;
+                //ticketAux = null;
             }
            
         }
