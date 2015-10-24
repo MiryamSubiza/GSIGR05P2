@@ -1200,5 +1200,29 @@ public class BussinessSystem implements TicketOffice {
         return numTicketsOk;
         
     }
+
+    public int importConcerts(File f) throws IOException {
+        
+        Sheet sheet;
+        sheet = SpreadSheet.createFromFile(f).getSheet(0);
+        Concert concertAux = null;
+        int numConcertsOk = 0;
+        
+        // Recorro la hoja de calculo fila a fila y voy creando
+        // los conciertos con los datos de cada una de esas lineas
+        for (int i = 0; i < sheet.getRowCount(); i++) {
+            
+            concertAux = new Concert(sheet.getCellAt(0,i).getTextValue(), retrievePerformer(sheet.getCellAt(1,i).getTextValue()), new FechaCompleta(sheet.getCellAt(2,i).getTextValue(),sheet.getCellAt(3,i).getTextValue()),
+                new FechaCompleta(sheet.getCellAt(4,i).getTextValue(),sheet.getCellAt(5,i).getTextValue()),new FechaCompleta(sheet.getCellAt(6,i).getTextValue(),sheet.getCellAt(7,i).getTextValue()),
+                new FechaCompleta(sheet.getCellAt(8,i).getTextValue(),sheet.getCellAt(9,i).getTextValue()), getLocation(sheet.getCellAt(10,i).getTextValue()));
+            if(addNewConcert(concertAux)){
+                numConcertsOk++;
+            }
+            concertAux = null;
+            
+        }
+        return numConcertsOk;
+        
+    }
     
 }
