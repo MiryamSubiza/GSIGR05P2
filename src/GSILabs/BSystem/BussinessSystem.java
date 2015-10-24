@@ -1201,6 +1201,11 @@ public class BussinessSystem implements TicketOffice {
         
     }
 
+    /**
+     * Lee de un fichero una serie de conciertos y los introduce al sistema
+     * @param f   Fichero del cual voy a leer los conciertos
+     * @return El numero de conciertos que he introducido correctamente
+     */
     public int importConcerts(File f) throws IOException {
         
         Sheet sheet;
