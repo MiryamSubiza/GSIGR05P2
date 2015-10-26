@@ -769,11 +769,24 @@ public class BussinessSystem implements TicketOffice {
      *  to the system
      */
     public boolean addNewTicket(Ticket t) {
-        if (t != null) {
-            tickets.put(AITickets.getAndIncrement(), t);
-            return true;
+        
+        boolean respuesta;
+        // Si el ticket o el evento asociado al mismo es nulo no lo añado
+        if ((t != null) && (t.getEvent() != null)) {
+            // Si el evento al que esta asociado no existe no se añade dicho ticket
+            if((concerts.containsKey(t.getEvent().getName())) || (festivals.containsKey(t.getEvent().getName())) || (exhibitions.containsKey(t.getEvent().getName()))){
+                
+                tickets.put(AITickets.getAndIncrement(), t);
+                respuesta = true;
+                
+            }
+            else{
+                respuesta = false;
+            }
         }
-        else return false;
+        else respuesta =  false;
+        return respuesta;
+        
     }
     
     /**
@@ -1158,8 +1171,7 @@ public class BussinessSystem implements TicketOffice {
                 // Si entra en el if quiere decir que estamos en la primera posicion
                 // de la fila y contiene el nombre del evento al que esta asociado el ticket
                 if((!sheet.getCellAt(j,i).isEmpty()) && (j == 0)){
-                    
-                    System.out.println("Inicializo ticket");
+                                        
                     String nameEvent = (String)sheet.getCellAt(j,i).getValue();
                     ticketAux = new Ticket(getEvent(nameEvent));
                     
@@ -1167,19 +1179,18 @@ public class BussinessSystem implements TicketOffice {
                 // Ahora ya se seguro que la celda contiene algo que va a ser o id o si
                 // esta usado o no la entrada
                 else{
-                    // Si se encuentra en columna par quiere decir que contiene un ID
-                    // si ademas la siguiente columna no esta vacia, quiere decir que
-                    // almacena si la entrada es usada o no, dicho caso procedemos a
+                    // Si se encuentra en columna par (j impar porque empieza en 0) quiere decir                   
+                    // que contiene un ID si ademas la siguiente columna no esta vacia, quiere
+                    // decir que almacena si la entrada es usada o no, dicho caso procedemos a
                     // añadirla
-                    System.out.println("Entro en añadir ids y booleans");
+                                        
                     if((j%2 != 0)&&(!sheet.getCellAt(j+1,i).isEmpty())){
-                        if(sheet.getCellAt(j+1,i).getValue().equals(NOTUSED)){
-                            // La entrada no esta usada
-                            System.out.println("Entro");
+                        if(sheet.getCellAt(j+1,i).getTextValue().equals(NOTUSED)){
+                            // La entrada no esta usada                            
                             ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), false);                            
                         }
-                        else if(sheet.getCellAt(j+1,i).getValue().equals(USED)){
-                            // La entrada esta usada
+                        else if(sheet.getCellAt(j+1,i).getTextValue().equals(USED)){
+                            // La entrada esta usada                            
                             ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), true);
                         }
                     }
@@ -1188,12 +1199,11 @@ public class BussinessSystem implements TicketOffice {
             
             // Ahora que ya he rellenado el ticketAux con todos los identificadores
             // lo introduzco en el BussinessSystem
-            if(addNewTicket(ticketAux)){
-                System.out.println(ticketAux.toString());
+            if(addNewTicket(ticketAux)){                
                 numTicketsOk++;
                 // Lo vuelvo a poner a null para añadir otro ticket
                 // en la siguiente iteración
-                //ticketAux = null;
+                ticketAux = null;
             }
            
         }
@@ -1209,7 +1219,7 @@ public class BussinessSystem implements TicketOffice {
     public int importConcerts(File f) throws IOException {
         
         Sheet sheet;
-        sheet = SpreadSheet.createFromFile(f).getSheet(0);
+        sheet = SpreadSheet.createFromFile(f).getSheet(1);
         Concert concertAux = null;
         int numConcertsOk = 0;
         
