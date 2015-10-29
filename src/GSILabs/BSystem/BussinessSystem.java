@@ -776,15 +776,25 @@ public class BussinessSystem implements TicketOffice {
             // Si el evento al que esta asociado no existe no se añade dicho ticket
             if((concerts.containsKey(t.getEvent().getName())) || (festivals.containsKey(t.getEvent().getName())) || (exhibitions.containsKey(t.getEvent().getName()))){
                 
-                tickets.put(AITickets.getAndIncrement(), t);
-                respuesta = true;
+                if(!hasIDCollision(t)){
+                    // Si los id's del ticket no coinciden con ningún otro ticket
+                    // del sistema lo introduzco al mismo
+                    tickets.put(AITickets.getAndIncrement(), t);
+                    respuesta = true;
+                }
+                else{
+                    // El ticket contiene id's ya existentes en el sistema
+                    respuesta = false;
+                }
                 
             }
             else{
+                // El evento asociado al ticket no existe en el sistema
+                // por lo tanto no lo añado
                 respuesta = false;
             }
         }
-        else respuesta =  false;
+        else respuesta =  false; // El ticket t o el evento asociado al mismo son nulos
         return respuesta;
         
     }
@@ -797,18 +807,22 @@ public class BussinessSystem implements TicketOffice {
      *      part of another ticket.
      */
     public boolean hasIDCollision(Ticket t) {
+        
         int[] identifiers = t.getIdentifiers();
+        boolean respuesta;
         for (int j = 0; j < identifiers.length; j++) {
             Iterator i = tickets.values().iterator();
             Ticket ticketAux = null;
             while (i.hasNext()) {
                 ticketAux = (Ticket)i.next();
                 if ((ticketAux.checkIdentifierInTicket(identifiers[j])) && (ticketAux.getEvent().equals(t.getEvent()))) {
-                    return true;
+                    respuesta = true;
                 }
             }
         }
-        return false;
+        respuesta = false;
+        
+        return respuesta;
     }
     
     /**
@@ -820,18 +834,21 @@ public class BussinessSystem implements TicketOffice {
     */
     public boolean availableTicketID(Event e, int id) {
 
+        boolean respuesta;
         if (existsEvent(e)) {
             Iterator i = tickets.values().iterator();
-            Ticket ticketAux = null;
+            Ticket ticketAux = null;            
             while (i.hasNext()) {
                 ticketAux = (Ticket)i.next();
                 if (ticketAux.getEvent().equals(e)) {
-                    if (ticketAux.checkIdentifierInTicket(id)) return false;
+                    if (ticketAux.checkIdentifierInTicket(id)) respuesta = false;
                 }
             }
-            return true;
+            respuesta = true;
         }
-        else return false;
+        else respuesta = false;
+        
+        return respuesta;
         
     }
     
@@ -1172,7 +1189,7 @@ public class BussinessSystem implements TicketOffice {
                 // de la fila y contiene el nombre del evento al que esta asociado el ticket
                 if((!sheet.getCellAt(j,i).isEmpty()) && (j == 0)){
                                         
-                    String nameEvent = (String)sheet.getCellAt(j,i).getValue();
+                    String nameEvent = sheet.getCellAt(j,i).getTextValue();
                     ticketAux = new Ticket(getEvent(nameEvent));
                     
                 }
@@ -1182,9 +1199,11 @@ public class BussinessSystem implements TicketOffice {
                     // Si se encuentra en columna par (j impar porque empieza en 0) quiere decir                   
                     // que contiene un ID si ademas la siguiente columna no esta vacia, quiere
                     // decir que almacena si la entrada es usada o no, dicho caso procedemos a
-                    // añadirla
+                    // añadirla.
+                    // Si se da el caso que la primera casilla de la fila no esta, no creare dicho
+                    // ticket porque la información recogida de la hoja de cálculo es inconsistente.                   
                                         
-                    if((j%2 != 0)&&(!sheet.getCellAt(j+1,i).isEmpty())){
+                    if((j%2 != 0)&&(!sheet.getCellAt(j+1,i).isEmpty())&&(!sheet.getCellAt(j,i).isEmpty())){
                         if(sheet.getCellAt(j+1,i).getTextValue().equals(NOTUSED)){
                             // La entrada no esta usada                            
                             ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), false);                            
@@ -1201,6 +1220,7 @@ public class BussinessSystem implements TicketOffice {
             // lo introduzco en el BussinessSystem
             if(addNewTicket(ticketAux)){                
                 numTicketsOk++;
+                System.out.println(ticketAux.toString());
                 // Lo vuelvo a poner a null para añadir otro ticket
                 // en la siguiente iteración
                 ticketAux = null;
