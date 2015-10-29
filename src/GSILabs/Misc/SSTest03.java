@@ -24,7 +24,7 @@ public class SSTest03 {
     public static void main(String[] args) throws IOException {
         
         //Array bidimensional para almacenar los datos del excel
-        java.math.BigDecimal[][] valores = new java.math.BigDecimal[4][6];
+        int[][] valores = new int[4][6];
 
         final File file = new File("test02.ods");
                 
@@ -37,7 +37,7 @@ public class SSTest03 {
          */
         for (int i = 5; i < 9; i++) {
             for (int j = 3; j < 9; j++) {
-                valores[i-5][j-3] = (java.math.BigDecimal)sheet.getCellAt(j, i).getValue();
+                valores[i-5][j-3] = Integer.parseInt(sheet.getCellAt(j, i).getTextValue());
                 System.out.print(valores[i-5][j-3] + "\t");
             }
             System.out.println();
