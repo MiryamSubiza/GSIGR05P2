@@ -1176,8 +1176,11 @@ public class BussinessSystem implements TicketOffice {
         sheet = SpreadSheet.createFromFile(f).getSheet(0);
                        
         Ticket ticketAux = null;
-        final String USED = "Used";
-        final String NOTUSED = "Not used";
+        String USED = "Used";
+        String NOTUSED = "Not used";
+        // Elimino espacios para luego poder compararlos
+        USED = USED.replace(" ", "");
+        NOTUSED = NOTUSED.replace(" ", "");
         // Voy a recorrer todas las filas de la hoja de calculo, para ir añadiendo
         // los tickets uno a uno        
         
@@ -1204,12 +1207,20 @@ public class BussinessSystem implements TicketOffice {
                     // ticket porque la información recogida de la hoja de cálculo es inconsistente.                   
                                         
                     if((j%2 != 0)&&(!sheet.getCellAt(j+1,i).isEmpty())&&(!sheet.getCellAt(j,i).isEmpty())){
-                        if(sheet.getCellAt(j+1,i).getTextValue().equals(NOTUSED)){
-                            // La entrada no esta usada                            
-                            ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), false);                            
+                                                
+                        String usedOrNot = sheet.getCellAt(j+1,i).getTextValue();
+                        // Elimino los espacios de la casilla para poder hacer una
+                        // comparacion limpia.
+                        usedOrNot = usedOrNot.replace(" ", "");
+                        System.out.println(usedOrNot);
+                        if(usedOrNot.equals(NOTUSED)){
+                            // La entrada no esta usada
+                            System.out.println("NOT USED");
+                            ticketAux.addTicketToTicket(Integer.parseInt(sheet.getCellAt(j,i).getTextValue()), false);                            
                         }
-                        else if(sheet.getCellAt(j+1,i).getTextValue().equals(USED)){
-                            // La entrada esta usada                            
+                        else if(usedOrNot.equals(USED)){
+                            // La entrada esta usada
+                            System.out.println("USED");
                             ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), true);
                         }
                     }
