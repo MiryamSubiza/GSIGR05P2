@@ -74,11 +74,32 @@ public class Festival implements LastingEvent {
     }
     
     /**
+     * Tercer método constructor, inicialización de variables
+     * @param festivalName Nombre del festival
+     * @param startDateFestival Fecha de apertura, que coincide con la fecha del primer concierto
+     * @param closingDateFestival Fecha de cierre, que coincide con la fecha del último concierto
+     * @param startTimeFestival Hora de apertura, que coincide con la hora de apertura de puertas
+        del primer concierto
+     * @param closingTimeFestival Hora de cierre, que coincide con la hora de cierre del último concierto
+     */
+    public Festival (String festivalName, FechaCompleta startDateFestival, FechaCompleta closingDateFestival,
+        FechaCompleta startTimeFestival, FechaCompleta closingTimeFestival) {
+
+        this.festivalName = festivalName;
+        this.concerts = new HashSet();
+        this.startDateFestival = startDateFestival;
+        this.closingDateFestival = closingDateFestival;
+        this.startTimeFestival = startTimeFestival;
+        this.closingTimeFestival = closingTimeFestival;
+        
+    }
+    
+    /**
      * Añadir concierto al festival
      * @param c Concierto a añadir
      */
-    public void addConcert (Concert c) {
-        concerts.add(c);
+    public boolean addConcert (Concert c) {
+        return concerts.add(c);
     }
     
     /**
