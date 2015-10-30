@@ -168,11 +168,12 @@ public class Ticket {
      * @param usedOrNot True si esta usado o falso si no esta usado
      * @return True si la entrada ha sido añadido dentro del objeto Ticket
      */
-    public boolean addTicketToTicket(int idTicket, boolean usedOrNot){
+    public Boolean addTicketToTicket(int idTicket, Boolean usedOrNot){
         
         // Añado a mi HashMap de identificadores de este ticket la nueva entrada
-        this.numberOfPeople++;
-        return people.put(idTicket, usedOrNot);        
+        this.numberOfPeople++;        
+        Boolean respuesta = people.put(idTicket, usedOrNot);
+        return respuesta;
         
     }
     
