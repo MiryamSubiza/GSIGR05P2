@@ -359,7 +359,7 @@ public class Festival implements LastingEvent {
                 startDateFestival.fechaToString() + "\nStart time: " + 
                 startTimeFestival.horaToString() + "h\nClosing date: " + 
                 closingDateFestival.fechaToString() + "\nClosing time: " + 
-                closingTimeFestival.horaToString() + "h\n";
+                closingTimeFestival.horaToString() + "h\nConciertos:\n" + concerts.toString() + "\n";
     }
 
 }
