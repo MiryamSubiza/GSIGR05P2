@@ -20,8 +20,10 @@ public class SSTest05 {
     
     public static void main(String[] args) throws IOException{
         
-        //final File file = new File("P05Ej02.ods");
-        final File file = new File("festivales.ods");
+        // En este test pongo a prueba el método importTickets de modo que
+        // a través de una hoja de cálculo que contiene tickets los añado
+        // al sistema
+        final File file = new File("P05Ej02.ods");        
         bSystem = new BussinessSystem();
         
         Location l = new Location("Palacio Mestalla",10000,"Valencia");
@@ -32,7 +34,7 @@ public class SSTest05 {
                     new FechaCompleta("02/02/2015","21:00"), new FechaCompleta("03/02/2015","00:00"), l);
         bSystem.addNewConcert(c);
         
-        int ticketsOk = bSystem.importFestivals(file);
+        int ticketsOk = bSystem.importTickets(file);
         System.out.println("El numero de tickets introducidos: "+ ticketsOk);
         
     }
