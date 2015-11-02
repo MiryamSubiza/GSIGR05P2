@@ -20,7 +20,8 @@ public class SSTest05 {
     
     public static void main(String[] args) throws IOException{
         
-        final File file = new File("P05Ej02.ods");
+        //final File file = new File("P05Ej02.ods");
+        final File file = new File("festivales.ods");
         bSystem = new BussinessSystem();
         
         Location l = new Location("Palacio Mestalla",10000,"Valencia");
@@ -31,7 +32,7 @@ public class SSTest05 {
                     new FechaCompleta("02/02/2015","21:00"), new FechaCompleta("03/02/2015","00:00"), l);
         bSystem.addNewConcert(c);
         
-        int ticketsOk = bSystem.importTickets(file);
+        int ticketsOk = bSystem.importFestivals(file);
         System.out.println("El numero de tickets introducidos: "+ ticketsOk);
         
     }
