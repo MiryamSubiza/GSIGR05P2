@@ -1166,6 +1166,7 @@ public class BussinessSystem implements TicketOffice {
      * Lee de un fichero una serie de tickets y los introduce al sistema
      * @param f   Fichero del cual voy a leer los tickets
      * @return El numero de tickets que he introducido correctamente
+     * @throws java.io.IOException
      */
     public int importTickets(File f) throws IOException{
         
@@ -1212,16 +1213,13 @@ public class BussinessSystem implements TicketOffice {
                         // Elimino los espacios de la casilla para poder hacer una
                         // comparacion limpia.
                         usedOrNot = usedOrNot.replace(" ", "");
-                        System.out.println(usedOrNot);
                         if(usedOrNot.equals(NOTUSED)){
                             // La entrada no esta usada
-                            System.out.println("NOT USED");
                             ticketAux.addTicketToTicket(Integer.parseInt(sheet.getCellAt(j,i).getTextValue()), false);                            
                         }
                         else if(usedOrNot.equals(USED)){
                             // La entrada esta usada
-                            System.out.println("USED");
-                            ticketAux.addTicketToTicket((int)sheet.getCellAt(j,i).getValue(), true);
+                            ticketAux.addTicketToTicket(Integer.parseInt(sheet.getCellAt(j,i).getTextValue()), true);
                         }
                     }
                 }
@@ -1246,11 +1244,12 @@ public class BussinessSystem implements TicketOffice {
      * Lee de un fichero una serie de conciertos y los introduce al sistema
      * @param f   Fichero del cual voy a leer los conciertos
      * @return El numero de conciertos que he introducido correctamente
+     * @throws java.io.IOException
      */
     public int importConcerts(File f) throws IOException {
         
         Sheet sheet;
-        sheet = SpreadSheet.createFromFile(f).getSheet(1);
+        sheet = SpreadSheet.createFromFile(f).getSheet(0);
         Concert concertAux = null;
         int numConcertsOk = 0;
         
@@ -1268,6 +1267,96 @@ public class BussinessSystem implements TicketOffice {
             
         }
         return numConcertsOk;
+        
+    }
+    
+    /**
+     * Lee de un fichero una serie de festivales y los introduce al sistema
+     * @param f   Fichero del cual voy a leer los festivales
+     * @return El numero de festivales que he introducido correctamente
+     * @throws java.io.IOException
+     */
+    public int importFestivals(File f) throws IOException{
+        
+        Sheet sheet;
+        sheet = SpreadSheet.createFromFile(f).getSheet(0);
+        Festival festivalAux = null;
+        int numFestivalesOk = 0;
+        
+        // Recorro la hoja de calculo fila a fila y voy creando
+        // los festivales con los datos de cada una de esas lineas
+        for (int i = 0; i < sheet.getRowCount(); i++) {
+            
+            // Este array de strings almacenara la informacion básica sobre
+            // el festival salvo los conciertos, es decir, nombre y hora de
+            // apertura, cierre, etc.
+            String datosFestival[] = new String[9];
+            // Esta variable cuenta el numero de conciertos añadido al festival
+            // si no se añade ningún concierto al festival, este no se añade al sistema
+            int numConciertosAdded = 0;
+            
+            for(int j = 0; j < sheet.getColumnCount(); j++){                                
+                
+                // Los primeros 9 datos de la hoja de calculo contendras el nombre del
+                // festival asi como su fecha y hora de apertura, cierre, etc. Por eso
+                // en la 9 primeras iteraciones del for entraremos y guardare dicha información
+                // en un array de String para  cuando haya cogido todos los datos crear
+                // el objeto Festival y ir añadiendo los conciertos
+                if((!sheet.getCellAt(j,i).isEmpty()) && (j < 9)){
+                    
+                    datosFestival[j] = sheet.getCellAt(j,i).getTextValue();
+                    if(j == 8){
+                        // En j = 8 quiere decir que ya he almacenado todos los datos
+                        // necesarios para crear el objeto festival
+                        festivalAux = new Festival(datosFestival[0], new FechaCompleta(datosFestival[1],datosFestival[2]),
+                            new FechaCompleta(datosFestival[3],datosFestival[4]), new FechaCompleta(datosFestival[5],datosFestival[6]),
+                            new FechaCompleta(datosFestival[7],datosFestival[8]));
+                    }
+                    
+                }
+                // A partir de ahora todo lo que siga van a ser nombres de conciertos
+                // asociados al festival que acabamos de crear de modo que ire añadiendolos
+                // uno a uno.
+                else{
+                    // Si la casilla no esta vacia intento añadir dicho concierto
+                    if(!sheet.getCellAt(j,i).isEmpty()){
+                        
+                        // Capto el nombre del concierto a introducir
+                        String concertName = sheet.getCellAt(j,i).getTextValue();
+                        // Voy a mirar que dicho concierto exista en el sistema
+                        // en caso de que no exista no añadire dicho concierto al festival
+                        if((getEvent(concertName) != null) && (getEvent(concertName) instanceof Concert)){
+                                                    
+                            // Si no es nulo y es un instancia de concierto 
+                            // quiere decir que el concierto existe por tanto
+                            // lo añado al festival.
+                            if (festivalAux.addConcert((Concert)getEvent(concertName))) numConciertosAdded++;
+                            
+                        }
+                        
+                    }                    
+                                        
+                }
+                
+            }
+            
+            // Ahora que ya he rellenado el festivalAux compruebo primero si contiene conciertos
+            // en caso de que no los haya no añadira el festival al sistema. Si contiene al menos
+            // uno intentara añadirlo si la política del sistema permite añadir el festival, este
+            // será añadido al sistema
+            if(numConciertosAdded > 0){
+                if(addNewFestival(festivalAux)){                
+                    numFestivalesOk++;
+                    System.out.println(festivalAux.toString());
+                    // Lo vuelvo a poner a null para añadir otro ticket
+                    // en la siguiente iteración
+                    festivalAux = null;
+                }
+                numConciertosAdded = 0;
+            }
+            
+        }
+        return numFestivalesOk;
         
     }
     
